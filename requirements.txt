@@ -1,0 +1,9 @@
+langchain==0.3.7
+langchain-anthropic==0.3.0
+langchain-core==0.3.18
+langchain-openai==0.2.8
+langchainhub==0.1.21
+langgraph==0.2.48
+langsmith==0.1.143
+python-dotenv==1.0.1
+requests==2.26.0
