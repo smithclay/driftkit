@@ -139,7 +139,7 @@ class StreetNavigator:
         params = {
             'place_id': place_id,
             'key': GOOGLE_MAPS_API_KEY,
-            'fields': 'name,formatted_address,geometry,rating,formatted_phone_number,website,types,opening_hours,business_status'
+            'fields': 'name,formatted_address,geometry,rating,formatted_phone_number,website,types,business_status'
         }
 
         try:
@@ -168,7 +168,6 @@ class StreetNavigator:
                     'address': result.get('formatted_address'),
                     'rating': result.get('rating'),
                     'types': result.get('types'),
-                    'opening_hours': result.get('opening_hours'),
                     'business_status': result.get('business_status')
                 }
 

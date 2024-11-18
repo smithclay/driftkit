@@ -1,2 +1,6 @@
 .env
 __pycache__
+temp_montage
+.conda
+street_montage.mp4
+.DS_Store

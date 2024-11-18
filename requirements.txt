@@ -7,3 +7,8 @@ langgraph==0.2.48
 langsmith==0.1.143
 python-dotenv==1.0.1
 requests==2.26.0
+# for movie generation
+pillow==11.0.0
+moviepy==1.0.3
+opencv-python==4.10.0.84
+scipy==1.14.1
