@@ -60,7 +60,7 @@ class StreetNavigator:
         coords, formatted_address = self._geocode(address)
         current_location = Location(
             id="",
-            name="Start Location",
+            name=address,
             coordinates=coords,
             address=formatted_address,
             types=["route_start"]
