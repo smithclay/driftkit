@@ -157,7 +157,66 @@ class StreetMontageCreator:
             
         return processed_images
 
-    def create_montage(self, locations: List[Dict], script: str, output_path: str, fps: float = None) -> None:
+    def _create_map_sequence(self, map_img: Image, frames: int = 60) -> List[np.ndarray]:
+        """
+        Create a sequence of frames showing the route map with a zoom effect.
+        
+        Args:
+            locations: List of location dictionaries
+            frames: Number of frames to generate
+            
+        Returns:
+            List of numpy arrays containing map frames
+        """
+        try:
+            # Get the base map
+            print("Fetching route map...")
+            map_array = np.array(map_img)
+            
+            if map_array is None or map_array.size == 0:
+                raise ValueError("Failed to create map image")
+                
+            print(f"Map shape: {map_array.shape}")
+            
+            # Create sequence with zoom and fade effect
+            sequence = []
+            height, width = map_array.shape[:2]
+            
+            for i in range(frames):
+                # Calculate zoom factor (1.0 to 1.2)
+                progress = i / frames
+                zoom = 1.0 + (0.2 * progress)
+                
+                # Create transformation matrix
+                center_x, center_y = width // 2, height // 2
+                M = cv2.getRotationMatrix2D((center_x, center_y), 0, zoom)
+                
+                # Apply zoom transformation
+                zoomed = cv2.warpAffine(map_array, M, (width, height))
+                
+                # Add fade-in effect
+                alpha = min(1.0, progress * 2)  # Fade in during first half
+                if i < frames // 2:
+                    zoomed = cv2.addWeighted(
+                        np.zeros_like(zoomed), 
+                        1 - alpha,
+                        zoomed, 
+                        alpha, 
+                        0
+                    )
+                    
+                sequence.append(zoomed)
+                
+            print(f"Generated {len(sequence)} map frames")
+            return sequence
+            
+        except Exception as e:
+            print(f"Error creating map sequence: {str(e)}")
+            # Return a sequence of blank frames as fallback
+            blank_frame = np.zeros((720, 1280, 3), dtype=np.uint8)
+            return [blank_frame.copy() for _ in range(frames)]
+
+    def create_montage(self, map_img: Image, locations: List[Dict], script: str, output_path: str, fps: float = None) -> None:
         fps = float(fps) if fps is not None else float(self.DEFAULT_FPS)
         print(f"Starting video creation with fps: {fps}")
         
@@ -218,6 +277,10 @@ class StreetMontageCreator:
             # Apply psychedelic effects
             print("Applying psychedelic effects...")
             images = self._apply_psychedelic_effects(images, fps)
+            
+            # TODO: this does not work as the map is a different image size
+            #map_frames = self._create_map_sequence(map_img, frames=int(fps * 4))  # 4 seconds of map
+            #images.extend(map_frames)
 
             # Create video without audio first
             print("Creating video clip...")

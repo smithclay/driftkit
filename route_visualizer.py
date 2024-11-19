@@ -1,6 +1,7 @@
 import os
 import urllib
 import requests
+import io
 
 # Read API key from environment variable
 GOOGLE_MAPS_API_KEY = os.environ.get('GMAPS_API_KEY')
@@ -31,7 +32,7 @@ def visualize_route(detailed_route):
     #end_marker = f"color:red|label:E|{self.visited_locations[-1].coordinates.lat},{self.visited_locations[-1].coordinates.lon}"
 
     # Construct the base URL
-    base_url = f"{STATIC_MAP_API_URL}?size=640x640&scale=2&maptype=roadmap&key={GOOGLE_MAPS_API_KEY}"
+    base_url = f"{STATIC_MAP_API_URL}?size=1280x720&scale=2&maptype=roadmap&key={GOOGLE_MAPS_API_KEY}"
 
     # Add markers
     #base_url += f"&markers={urllib.parse.quote(start_marker)}&markers={urllib.parse.quote(end_marker)}"
@@ -58,6 +59,9 @@ def visualize_route(detailed_route):
         # show image in Jupyter Notebook
         from IPython.display import Image, display
         display(Image(response.content))
+        
+        from PIL import Image as PILImage
+        return PILImage.open(io.BytesIO(response.content))
     except requests.RequestException as e:
         print(f"Failed to generate map. Error: {e}")
     except Exception as e:
